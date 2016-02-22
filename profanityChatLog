@@ -8,9 +8,11 @@ def main():
     PARSER = argparse.ArgumentParser(description='''
         show the last chat log file for given user und chat user
     ''')
+
     PARSER.add_argument('-u', '--user', required=True , help='choose xmpp user. name part is sufficient.')
     PARSER.add_argument('-c', '--chatUser', help='choose xmpp user for chat log. name part is sufficient.')
     PARSER.add_argument('-L', '--listChatUsers', action='store_true', help='list all chat users having a chat log')
+    PARSER.add_argument('-a', '--all', action='store_true', help='show all stored messages for given chat user')
     
     args = PARSER.parse_args()
    
@@ -60,10 +62,15 @@ def main():
 
     protocols.sort(reverse=True)
 
-    logFile = os.path.join(chatUser, protocols[0])
-    
-    with open(logFile,'r') as f:
-        print(f.read())
+    if not args.all:
+        logFile = os.path.join(chatUser, protocols[0])
+        
+        with open(logFile,'r') as f:
+            print(f.read())
+    else:
+        for currentLogFile in protocols:
+            with open(os.path.join(chatUser, currentLogFile),'r') as f:
+                print(f.read())
 
 if __name__ == '__main__':
     main()

@@ -9,7 +9,7 @@ See the [profanity documentation](http://www.profanity.im/reference.html#chlog) 
 
 
 ```
-usage: profanityChatLog [-h] -u USER [-c CHATUSER] [-L]
+usage: profanityChatLog [-h] -u USER [-c CHATUSER] [-L] [-a]
 
 show the last chat log file for given user und chat user
 
@@ -20,6 +20,7 @@ optional arguments:
                         choose xmpp user for chat log. name part is
                         sufficient.
   -L, --listChatUsers   list all chat users having a chat log
+  -a, --all             show all stored messages for given chat user
 ```
 
 ### Example
@@ -35,6 +36,12 @@ Show last recent chatlog for user *hake* with chat partner *friend*
 
 ```bash
 profanityChatLog -u hake -c friend
+```
+
+Show all stored chat messages for user *hake* with chat partner *friend*
+
+```bash
+profanityChatLog -u hake -c friend -a
 ```
 
 ### Contact
