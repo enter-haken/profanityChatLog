@@ -1,0 +1,69 @@
+#!/usr/bin/env python
+import os
+import sys
+import re
+import argparse
+
+def main():
+    PARSER = argparse.ArgumentParser(description='''
+        show the last chat log file for given user und chat user
+    ''')
+    PARSER.add_argument('-u', '--user', required=True , help='choose xmpp user. name part is sufficient.')
+    PARSER.add_argument('-c', '--chatUser', help='choose xmpp user for chat log. name part is sufficient.')
+    PARSER.add_argument('-L', '--listChatUsers', action='store_true', help='list all chat users having a chat log')
+    
+    args = PARSER.parse_args()
+   
+    # http://www.profanity.im/files.html#base-directories
+    dataHome = os.environ['XDG_DATA_HOME'] if 'XDG_DATA_HOME' in os.environ else os.path.join(os.environ['HOME'],'.local/share')
+
+    chatLogHome = os.path.join(dataHome, 'profanity/chatlogs')
+
+    userPattern = re.compile(args.user, re.IGNORECASE)
+    profanityUsers = [x for x in os.listdir(chatLogHome) if userPattern.match(x) ]
+
+    if not profanityUsers:
+        print('no users found for {}'.format(args.user))
+        sys.exit(0)
+
+    if len(profanityUsers) > 1:
+        print('more than one user found for {}'.format(args.user))
+        sys.exit(0)
+
+    userChatLogFolder = os.path.join(chatLogHome, profanityUsers[0])
+    
+    if args.listChatUsers:
+        print(os.listdir(userChatLogFolder))
+        sys.exit(0)
+
+    if not args.chatUser:
+        print('choose chat user. use -L for complete chat user log list')
+        sys.exit(0)
+
+    chatUserPattern = re.compile(args.chatUser, re.IGNORECASE)
+    
+    chatUsers = [ x for x in os.listdir(userChatLogFolder) if chatUserPattern.match(x)]
+    if not chatUsers:
+        print('chat user {} not found'.format(args.chatUser))
+        sys.exit(0)
+
+    if len(chatUsers) > 1:
+        print('more than one chat user found for {}'.format(args.chatUser))
+        sys.exit(0)
+    
+    chatUser = os.path.join(userChatLogFolder, chatUsers[0])
+
+    protocols = os.listdir(chatUser)
+    if not protocols:
+        print('no protocols found.')
+        sys.exit(0)
+
+    protocols.sort(reverse=True)
+
+    logFile = os.path.join(chatUser, protocols[0])
+    
+    with open(logFile,'r') as f:
+        print(f.read())
+
+if __name__ == '__main__':
+    main()
